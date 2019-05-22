@@ -10,16 +10,29 @@ const citiesOfRegion = {
     'East': ['', 'Donetsk', 'Kharkiv', 'Luhansk', 'Not in the list'],
     'South': ['', 'Kherson', 'Mykolaiv', 'Odesa', 'Zaporizhzhia', 'Not in the list'],
     'West': ['', 'Chernivtsi', 'Ivano-Frankivsk', 'Khmelnytskyi', 'Lutsk', 'Lviv', 'Rivne', 'Ternopil', 'Uzhhorod', 'Not in the list']
+};
+
+function isValidInputName() {
+    const valueInputName =  inputNameUser.value.match(/\S+/g);
+
+    if(valueInputName){
+        return valueInputName.length > 1 && valueInputName.length < 4;
+    }
+    return false;
+}
+
+function isValidInputTel() {
+    return  /^\+?3?8?(0\d{9})$/.test(telephoneUser.value);
 }
 
 function isValidForm() {
-    if(checkboxPrefer.checked && inputNameUser.classList.contains('backgroundGreen')){
+    if(checkboxPrefer.checked && isValidInputName()){
         buttonSubmit.disabled = false;
         return;
     }
 
-    if (inputNameUser.classList.contains('backgroundGreen') &&
-        telephoneUser.classList.contains('backgroundGreen') &&
+    if (isValidInputName() &&
+        isValidInputTel() &&
         selectRegions.value  &&
         (selectCities.value|| selectRegions.value==='Kyiv')) {
         buttonSubmit.disabled = false;
@@ -31,57 +44,50 @@ function isValidForm() {
 function checkInputName() {
     this.classList.remove('backgroundGreen');
     this.classList.remove('backgroundRed');
-    this.addEventListener('blur', function () {
-        const valueThis = this.value.match(/\S+/g);
-
-        if (valueThis) {
-             const lengthValue = valueThis.length;
-
-                if (lengthValue > 1 && lengthValue < 4) {
-                this.classList.add('backgroundGreen');
-                    isValidForm();
-                    return;
-            }
-        }
-            this.classList.add('backgroundRed');
-
-    })
+    this.addEventListener('keyup', function () {
+        isValidForm();
+    });
+     this.addEventListener('blur', function () {
+       if(isValidInputName()) {
+           this.classList.add('backgroundGreen');
+           return;
+       }
+         this.classList.add('backgroundRed');
+     })
 }
 
 function checkInputTelephone() {
     this.classList.remove('backgroundRed');
     this.classList.remove('backgroundGreen');
+    this.addEventListener('keyup', function () {
+        isValidForm();
+    });
     this.addEventListener('blur', function () {
-        const valueThis = /^\+?3?8?(0\d{9})$/.test(this.value);
-        if (valueThis) {
+        if(isValidInputTel()) {
             this.classList.add('backgroundGreen');
+            return;
         }
-        if (!valueThis) {
-            this.classList.add('backgroundRed');
-        }
-
+        this.classList.add('backgroundRed');
     })
-    isValidForm();
 }
 
 function showSelectCities() {
+    const valueSelectRegions = this.value;
+    const cities = citiesOfRegion[valueSelectRegions];
 
     while (selectCities.hasChildNodes()) {
         selectCities.removeChild(selectCities.firstChild);
     }
-    const valueSelectRegions = this.value;
-    const citiesRegion = citiesOfRegion[valueSelectRegions];
-    if (citiesRegion) {
-        citiesRegion.forEach(city => {
-            const tegSelect = document.createElement('option');
-            tegSelect.textContent = city;
-            tegSelect.setAttribute('value', city);
-            selectCities.append(tegSelect);
-            return true;
+
+    if (cities) {
+        cities.forEach(city => {
+            const tegOption = document.createElement('option');
+            tegOption.textContent = city;
+            tegOption.setAttribute('value', city);
+            selectCities.append(tegOption);
         })
     }
     isValidForm();
-
 }
 
 function hideDomElements() {

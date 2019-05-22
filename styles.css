@@ -1,4 +1,8 @@
-
+input,
+select{
+    display: block;
+    margin: 10px;
+}
 
 .backgroundRed {
     background-color: red;
