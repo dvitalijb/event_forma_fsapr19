@@ -1,7 +1,6 @@
-input,
-select{
-    display: block;
+label {
     margin: 10px;
+    display: block;
 }
 
 .backgroundRed {

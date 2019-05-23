@@ -1,78 +1,67 @@
-const inputNameUser = document.querySelector('input[type="text"]');
-const telephoneUser = document.querySelector('input[type="tel"]');
-const selectRegions = document.getElementById('regions');
-const selectCities = document.getElementById('cities');
-const checkboxPrefer = document.querySelector('input[type="checkbox"]');
-const buttonSubmit = document.querySelector('input[type="Submit"]');
 const citiesOfRegion = {
     'center': ['', 'Cherkasy', 'Dnipro', 'Kropyvnytskyi', 'Poltava', 'Vinnytsia', 'Zhytomyr', 'Not in the list'],
     'North': ['', 'Chernihiv', 'Sumy', 'Not in the list'],
     'East': ['', 'Donetsk', 'Kharkiv', 'Luhansk', 'Not in the list'],
     'South': ['', 'Kherson', 'Mykolaiv', 'Odesa', 'Zaporizhzhia', 'Not in the list'],
-    'West': ['', 'Chernivtsi', 'Ivano-Frankivsk', 'Khmelnytskyi', 'Lutsk', 'Lviv', 'Rivne', 'Ternopil', 'Uzhhorod', 'Not in the list']
+    'West': ['', 'Chernivtsi', 'Ivano-Frankivsk', 'Khmelnytskyi',
+        'Lutsk', 'Lviv', 'Rivne', 'Ternopil', 'Uzhhorod', 'Not in the list']
 };
+const inputName = document.forms[0].elements[0];
+const inputCheckbox = document.forms[0].elements[1];
+const inputTel = document.forms[0].elements[2];
+const selectRegions = document.forms[0].elements[3];
+const selectCities = document.forms[0].elements[4];
+const buttonForm = document.forms[0].elements[5];
+
+function checkInputName() {
+    inputName.classList.remove('backgroundGreen');
+    inputName.classList.remove('backgroundRed');
+    isValidInputName();
+    isValidForm();
+}
+
+function checkInputTelephone() {
+    inputTel.classList.remove('backgroundRed');
+    inputTel.classList.remove('backgroundGreen');
+    isValidInputTel();
+    isValidForm();
+}
 
 function isValidInputName() {
-    const valueInputName =  inputNameUser.value.match(/\S+/g);
+    const valueInputName = inputName.value.match(/\S+/g);
 
-    if(valueInputName){
+    if (valueInputName) {
         return valueInputName.length > 1 && valueInputName.length < 4;
     }
     return false;
 }
 
+function addColorInputName() {
+
+    if (isValidInputName()) {
+        this.classList.add('backgroundGreen');
+        return;
+    }
+
+    this.classList.add('backgroundRed');
+}
+
 function isValidInputTel() {
-    return  /^\+?3?8?(0\d{9})$/.test(telephoneUser.value);
+    return /^\+?3?8?(0\d{9})$/.test(inputTel.value);
 }
 
-function isValidForm() {
-    if(checkboxPrefer.checked && isValidInputName()){
-        buttonSubmit.disabled = false;
+function addColorInputTel() {
+
+    if (isValidInputTel()) {
+        this.classList.add('backgroundGreen');
         return;
     }
 
-    if (isValidInputName() &&
-        isValidInputTel() &&
-        selectRegions.value  &&
-        (selectCities.value|| selectRegions.value==='Kyiv')) {
-        buttonSubmit.disabled = false;
-        return;
-    }
-    buttonSubmit.disabled = true;
-}
-
-function checkInputName() {
-    this.classList.remove('backgroundGreen');
-    this.classList.remove('backgroundRed');
-    this.addEventListener('keyup', function () {
-        isValidForm();
-    });
-     this.addEventListener('blur', function () {
-       if(isValidInputName()) {
-           this.classList.add('backgroundGreen');
-           return;
-       }
-         this.classList.add('backgroundRed');
-     })
-}
-
-function checkInputTelephone() {
-    this.classList.remove('backgroundRed');
-    this.classList.remove('backgroundGreen');
-    this.addEventListener('keyup', function () {
-        isValidForm();
-    });
-    this.addEventListener('blur', function () {
-        if(isValidInputTel()) {
-            this.classList.add('backgroundGreen');
-            return;
-        }
-        this.classList.add('backgroundRed');
-    })
+    this.classList.add('backgroundRed');
 }
 
 function showSelectCities() {
-    const valueSelectRegions = this.value;
+    const valueSelectRegions = selectRegions.value;
     const cities = citiesOfRegion[valueSelectRegions];
 
     while (selectCities.hasChildNodes()) {
@@ -87,22 +76,51 @@ function showSelectCities() {
             selectCities.append(tegOption);
         })
     }
+
+    isValidForm();
+}
+
+function chooseCities() {
     isValidForm();
 }
 
 function hideDomElements() {
-    telephoneUser.classList.toggle('hideElement');
+    inputTel.classList.toggle('hideElement');
     selectRegions.classList.toggle('hideElement');
     selectCities.classList.toggle('hideElement');
+
     isValidForm();
 }
 
-function getValueSelectCities() {
-    isValidForm();
+function isValidForm() {
+
+    if (inputCheckbox.checked && isValidInputName()) {
+        buttonForm.disabled = false;
+        return;
+    }
+
+    if (isValidInputName() &&
+        isValidInputTel() &&
+        selectRegions.value &&
+        (selectCities.value ||
+            selectRegions.value === 'Kyiv')) {
+        buttonForm.disabled = false;
+        return;
+    }
+
+    buttonForm.disabled = true;
 }
 
-inputNameUser.addEventListener('focus', checkInputName);
-telephoneUser.addEventListener('focus', checkInputTelephone);
-selectRegions.addEventListener('click', showSelectCities);
-checkboxPrefer.addEventListener('click', hideDomElements);
-selectCities.addEventListener('click', getValueSelectCities);
+function checkForm() {
+    inputName.addEventListener('input', checkInputName);
+    inputName.addEventListener('blur', addColorInputName);
+    inputCheckbox.addEventListener('click', hideDomElements);
+    inputTel.addEventListener('input', checkInputTelephone);
+    inputTel.addEventListener('blur', addColorInputTel);
+    selectRegions.addEventListener('change', showSelectCities);
+    selectCities.addEventListener('change', chooseCities);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkForm();
+});
