@@ -1,34 +1,34 @@
 const citiesOfRegion = {
-    'center': ['', 'Cherkasy', 'Dnipro', 'Kropyvnytskyi', 'Poltava', 'Vinnytsia', 'Zhytomyr', 'Not in the list'],
-    'North': ['', 'Chernihiv', 'Sumy', 'Not in the list'],
-    'East': ['', 'Donetsk', 'Kharkiv', 'Luhansk', 'Not in the list'],
-    'South': ['', 'Kherson', 'Mykolaiv', 'Odesa', 'Zaporizhzhia', 'Not in the list'],
-    'West': ['', 'Chernivtsi', 'Ivano-Frankivsk', 'Khmelnytskyi',
+    center: ['', 'Cherkasy', 'Dnipro', 'Kropyvnytskyi', 'Poltava', 'Vinnytsia', 'Zhytomyr', 'Not in the list'],
+    North: ['', 'Chernihiv', 'Sumy', 'Not in the list'],
+    East: ['', 'Donetsk', 'Kharkiv', 'Luhansk', 'Not in the list'],
+    South: ['', 'Kherson', 'Mykolaiv', 'Odesa', 'Zaporizhzhia', 'Not in the list'],
+    West: ['', 'Chernivtsi', 'Ivano-Frankivsk', 'Khmelnytskyi',
         'Lutsk', 'Lviv', 'Rivne', 'Ternopil', 'Uzhhorod', 'Not in the list']
 };
-const inputName = document.forms[0].elements[0];
-const inputCheckbox = document.forms[0].elements[1];
-const inputTel = document.forms[0].elements[2];
-const selectRegions = document.forms[0].elements[3];
-const selectCities = document.forms[0].elements[4];
-const buttonForm = document.forms[0].elements[5];
+
+const { formReg } = document;
+const { name } = formReg;
+const { prefer } = formReg;
+const { tel } = formReg;
+const { regions } = formReg;
+const { cities } = formReg;
+const { button } = formReg;
 
 function checkInputName() {
-    inputName.classList.remove('backgroundGreen');
-    inputName.classList.remove('backgroundRed');
-    isValidInputName();
+    name.classList.remove('valid');
+    name.classList.remove('inValid');
     isValidForm();
 }
 
 function checkInputTelephone() {
-    inputTel.classList.remove('backgroundRed');
-    inputTel.classList.remove('backgroundGreen');
-    isValidInputTel();
+    tel.classList.remove('inValid');
+    tel.classList.remove('valid');
     isValidForm();
 }
 
-function isValidInputName() {
-    const valueInputName = inputName.value.match(/\S+/g);
+function validateName() {
+    const valueInputName = name.value.match(/\S+/g);
 
     if (valueInputName) {
         return valueInputName.length > 1 && valueInputName.length < 4;
@@ -37,43 +37,41 @@ function isValidInputName() {
 }
 
 function addColorInputName() {
-
-    if (isValidInputName()) {
-        this.classList.add('backgroundGreen');
+    if (validateName()) {
+        this.classList.add('valid');
         return;
     }
 
-    this.classList.add('backgroundRed');
+    this.classList.add('inValid');
 }
 
 function isValidInputTel() {
-    return /^\+?3?8?(0\d{9})$/.test(inputTel.value);
+    return /^\+?3?8?(0\d{9})$/.test(tel.value);
 }
 
 function addColorInputTel() {
-
     if (isValidInputTel()) {
-        this.classList.add('backgroundGreen');
+        this.classList.add('valid');
         return;
     }
 
-    this.classList.add('backgroundRed');
+    this.classList.add('inValid');
 }
 
 function showSelectCities() {
-    const valueSelectRegions = selectRegions.value;
-    const cities = citiesOfRegion[valueSelectRegions];
+    const valueSelectRegions = regions.value;
+    const region = citiesOfRegion[valueSelectRegions];
 
-    while (selectCities.hasChildNodes()) {
-        selectCities.removeChild(selectCities.firstChild);
+    while (cities.hasChildNodes()) {
+        cities.removeChild(cities.firstChild);
     }
 
-    if (cities) {
-        cities.forEach(city => {
+    if (region) {
+        region.forEach(city => {
             const tegOption = document.createElement('option');
             tegOption.textContent = city;
             tegOption.setAttribute('value', city);
-            selectCities.append(tegOption);
+            cities.append(tegOption);
         })
     }
 
@@ -85,40 +83,40 @@ function chooseCities() {
 }
 
 function hideDomElements() {
-    inputTel.classList.toggle('hideElement');
-    selectRegions.classList.toggle('hideElement');
-    selectCities.classList.toggle('hideElement');
+    tel.classList.toggle('hideElement');
+    regions.classList.toggle('hideElement');
+    cities.classList.toggle('hideElement');
 
     isValidForm();
 }
 
 function isValidForm() {
 
-    if (inputCheckbox.checked && isValidInputName()) {
-        buttonForm.disabled = false;
+    if (prefer.checked && validateName()) {
+        button.disabled = false;
         return;
     }
 
-    if (isValidInputName() &&
+    if (validateName() &&
         isValidInputTel() &&
-        selectRegions.value &&
-        (selectCities.value ||
-            selectRegions.value === 'Kyiv')) {
-        buttonForm.disabled = false;
+        regions.value &&
+        (cities.value ||
+            regions.value === 'Kyiv')) {
+        button.disabled = false;
         return;
     }
 
-    buttonForm.disabled = true;
+    button.disabled = true;
 }
 
 function checkForm() {
-    inputName.addEventListener('input', checkInputName);
-    inputName.addEventListener('blur', addColorInputName);
-    inputCheckbox.addEventListener('click', hideDomElements);
-    inputTel.addEventListener('input', checkInputTelephone);
-    inputTel.addEventListener('blur', addColorInputTel);
-    selectRegions.addEventListener('change', showSelectCities);
-    selectCities.addEventListener('change', chooseCities);
+    name.addEventListener('input', checkInputName);
+    name.addEventListener('blur', addColorInputName);
+    prefer.addEventListener('click', hideDomElements);
+    tel.addEventListener('input', checkInputTelephone);
+    tel.addEventListener('blur', addColorInputTel);
+    regions.addEventListener('change', showSelectCities);
+    cities.addEventListener('change', chooseCities);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

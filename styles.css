@@ -3,11 +3,11 @@ label {
     display: block;
 }
 
-.backgroundRed {
+.inValid {
     background-color: red;
 }
 
-.backgroundGreen {
+.valid {
     background-color: green;
 }
 
