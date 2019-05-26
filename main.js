@@ -28,34 +28,35 @@ function checkInputTelephone() {
 }
 
 function validateName() {
-    const valueInputName = name.value.match(/\S+/g);
+    const fullName = name.value.trim().split(' ');
+    const { length } = fullName;
+    const pattern = /[A-Z][a-zA-Z][^#&<>"~;$^%{}?]{1,20}$/;
 
-    if (valueInputName) {
-        return valueInputName.length > 1 && valueInputName.length < 4;
+    if (length > 1 && length < 4) {
+        return fullName.every(word => pattern.test(word));
     }
-    return false;
 }
 
 function addColorInputName() {
     if (validateName()) {
-        this.classList.add('valid');
+        name.classList.add('valid');
         return;
     }
 
-    this.classList.add('inValid');
+    name.classList.add('inValid');
 }
 
-function isValidInputTel() {
+function validateTel() {
     return /^\+?3?8?(0\d{9})$/.test(tel.value);
 }
 
 function addColorInputTel() {
-    if (isValidInputTel()) {
-        this.classList.add('valid');
+    if (validateTel()) {
+        tel.classList.add('valid');
         return;
     }
 
-    this.classList.add('inValid');
+    tel.classList.add('inValid');
 }
 
 function showSelectCities() {
@@ -67,12 +68,15 @@ function showSelectCities() {
     }
 
     if (region) {
-        region.forEach(city => {
+        const newCities = region.map(city => {
             const tegOption = document.createElement('option');
             tegOption.textContent = city;
             tegOption.setAttribute('value', city);
-            cities.append(tegOption);
-        })
+            return tegOption;
+
+        });
+
+        cities.append(...newCities);
     }
 
     isValidForm();
@@ -83,25 +87,26 @@ function chooseCities() {
 }
 
 function hideDomElements() {
-    tel.classList.toggle('hideElement');
-    regions.classList.toggle('hideElement');
-    cities.classList.toggle('hideElement');
+    tel.disabled = !tel.disabled;
+    regions.disabled = !regions.disabled;
+    cities.disabled = !cities.disabled;
 
     isValidForm();
 }
 
 function isValidForm() {
-
     if (prefer.checked && validateName()) {
         button.disabled = false;
         return;
     }
 
-    if (validateName() &&
-        isValidInputTel() &&
-        regions.value &&
-        (cities.value ||
-            regions.value === 'Kyiv')) {
+    if (
+        validateName()
+        && validateTel()
+        && regions.value
+        && (cities.value ||
+        regions.value === 'Kyiv')
+    ) {
         button.disabled = false;
         return;
     }
@@ -109,7 +114,7 @@ function isValidForm() {
     button.disabled = true;
 }
 
-function checkForm() {
+function addFormListeners() {
     name.addEventListener('input', checkInputName);
     name.addEventListener('blur', addColorInputName);
     prefer.addEventListener('click', hideDomElements);
@@ -120,5 +125,5 @@ function checkForm() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkForm();
+    addFormListeners();
 });
